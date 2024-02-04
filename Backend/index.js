@@ -13,10 +13,10 @@ app.get("/",(req,res)=>{
 })
 app.use(cookieParser());
 
-app.use(homeroute)
-app.use(regUser);
+// app.use(homeroute)
+// app.use(regUser);
 app.use(logUser);
-app.use(loginStore);
+// app.use(loginStore);
 app.use(errorHandler);
 app.listen(3000,()=>{
     console.log("Server started at port 3000")
