@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import cookie from "cookie";
 import Store from '../models/store.js'; // Assuming you have a Store model
 
 const storeController = {
@@ -41,7 +42,6 @@ const storeController = {
             // Respond with a success message and token
             res.status(201).json({
                 message: 'Store registered successfully',
-                token,
             });
         } catch (error) {
             next(error);
