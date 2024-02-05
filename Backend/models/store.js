@@ -8,6 +8,6 @@ const storeSchema = new mongoose.Schema({
     // ... other fields
 });
 
-const Store = mongoose.model('Store', storeSchema);
+const Store = mongoose.model('Store', storeSchema,'stores');
 
 export default Store;
