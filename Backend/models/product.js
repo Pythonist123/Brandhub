@@ -15,20 +15,29 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: 0,
     },
-    category: {
-        type: String,
-        required: true,
+    categoryID: {
+        type: Schema.Types.ObjectId,
+        ref:'Category'
     },
-    size: {
-        type: String,
-        enum: ['XS', 'S', 'M', 'L', 'XL'],
+    category:{
+        type:String,
+        
     },
+    availableSizes: [{
+        type: String,
+    }],
     color: [{
         type: String,
     }],
-    brand: {
+    image:[{
+        type:String
+    }],
+    brandID: {
         type:Schema.Types.ObjectId,
-        ref:"store",
+        ref:"Store",
+    },
+    brand:{
+        type:String,
     },
     inStock: {
         type: Boolean,

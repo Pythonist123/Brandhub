@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role:{
+    type:String,
+    default:'user',
+  }
   // Add any other fields you may need for your user model
   // For example, name, profile picture, etc.
 });

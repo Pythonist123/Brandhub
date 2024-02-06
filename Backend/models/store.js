@@ -1,13 +1,12 @@
-// models/store.js
 import mongoose from 'mongoose';
 
 const storeSchema = new mongoose.Schema({
-    // Define your store schema fields here
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    // ... other fields
+    role: { type: String, default: 'store' }, // Set default value to 'store'
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }],
 });
 
-const Store = mongoose.model('Store', storeSchema,'stores');
+const Store = mongoose.model('Store', storeSchema);
 
 export default Store;
