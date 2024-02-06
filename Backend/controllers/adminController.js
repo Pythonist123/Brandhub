@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import Admin from "../models/admin.js";
+import JWT from '../middleware/JWT.js';
 import cookie from "cookie"
 
 const adminController = {
@@ -20,7 +21,8 @@ const adminController = {
             // Check if the password is correct
             if (password === admin.password) {
                 // Generate a JWT token
-                const token = jwt.sign({ id: admin._id }, 'your-secret-key', { expiresIn: '1h' });
+                // const token = jwt.sign({ id: admin._id }, 'your-secret-key', { expiresIn: '1h' });
+                const token = JWT(admin._id,"admin");
 
 
                 // Set the token as a cookie

@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import UserDTO from "../DTO/UserDTO.js";
 import jwt from "jsonwebtoken";
 import cookie from "cookie"
+import JWT from "../middleware/JWT.js";
 // login user
 // register user
 
@@ -34,8 +35,8 @@ const  userController = {
               password: hashedPassword,
             });
 
-            const token = jwt.sign({ id: newUser._id }, 'your-secret-key', { expiresIn: '1h' });
-
+            // const token = jwt.sign({ id: newUser._id }, 'your-secret-key', { expiresIn: '1h' });
+            const token = JWT(newUser._id , "user");
             // Save the user to the database
             await newUser.save();
 
@@ -95,7 +96,8 @@ const  userController = {
           const userdto = new UserDTO(user._id,user.email);
             // After successfully authenticating, create a JWT token
 
-            const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
+            // const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
+            const token = JWT(user._id , "user");
 
             // Set the token as a cookie
             res.setHeader('Set-Cookie', cookie.serialize('token', token, {
