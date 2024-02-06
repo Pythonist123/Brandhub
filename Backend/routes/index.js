@@ -19,11 +19,24 @@ const logadmin = router.post("/admin/login",adminController.login);
 // store route
 const loginStore = router.post("/store/login",storeController.login);
 const regStore = router.post("/store/register",storeController.register);
-// admin route
+const addProduct = router.post("/store/addProduct",authController.authenticate,authController.isStore,storeController.addProduct);
+const addCategory = router.post("/store/addCategory",authController.authenticate,authController.isStore,storeController.addCategory);
 
+// admin route
+const adminRoute = router.get("/admin/dashboard",authController.authenticate,authController.isAdmin,(req,res,next)=>{
+    return res.status(200).json({
+        message:"Admin dashboard",
+    })
+})
 export {
     homeroute,
     regUser,
     logUser,
-    loginStore
+    loginStore,
+    regStore,
+    addProduct,
+    addCategory,
+    logadmin,
+    adminRoute,
+    
 }
