@@ -4,16 +4,19 @@ import Store from '../models/store.js'; // Assuming you have a Store model
 import Product from '../models/product.js';
 import Category from '../models/category.js';
 import JWT from '../middleware/JWT.js';
+import ProductDTO from '../DTO/productDTO.js';
 
 const storeController = {
     async register(req, res, next) {
         try {
             const { storeName, email, password } = req.body;
+            console.log(storeName, email);
 
             // Check if store with the same name or email already exists
             const existingStore = await Store.findOne({ $or: [{ storeName }, { email }] });
 
             if (existingStore) {
+                console.log(existingStore);
                 const error = {
                     status: 400,
                     message: 'Store with the same name or email already exists',
@@ -26,6 +29,7 @@ const storeController = {
                 storeName,
                 email,
                 password, // In a real-world scenario, you should hash the password before storing it
+                categories:[]
             });
 
             // Save the store to the database
@@ -94,6 +98,8 @@ const storeController = {
         }
     },
 
+
+    // Add Product
     async addProduct(req, res, next){
         try {
             // Parse the incoming request body to extract product details
@@ -117,7 +123,7 @@ const storeController = {
                 description,
                 price,
                 categoryID:categoryColl._id,
-                size,
+                availableSizes:size,
                 color,
                 brandID,
                 image,
@@ -126,9 +132,14 @@ const storeController = {
             // Save the newly created product to the database
             await newProduct.save();
     
+            // add category to store if it doesn't exist
+            if (!store.categories.includes(categoryColl._id)){
+                store.categories.push(categoryColl._id);
+            }
             // Update the corresponding category document to include the newly added product
             categoryColl.products.push(newProduct._id);
             await categoryColl.save();
+
     
             // Update the corresponding store document to include the newly added product
             // store.products.push(newProduct._id);
@@ -141,12 +152,162 @@ const storeController = {
             // Handle any errors that may occur during the process
             next(error);
         }
+    },
+// Delete Product
+async deleteProduct(req, res, next) {
+    try {
+        // Fetch the product ID from the request parameters
+        const { productId } = req.params;
+
+        // Find the product by its ID and delete it
+        const deletedProduct = await Product.findByIdAndDelete(productId);
+
+        // If the product doesn't exist, return a 404 error
+        if (!deletedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Remove the deleted product ID from all categories that contain it
+        await Category.updateMany(
+            { products: productId }, // Find categories that contain the product
+            { $pull: { products: productId } } // Pull the product ID from the products array
+        );
+
+        // Return a success response with the deleted product details
+        res.json({ message: 'Product deleted successfully', product: deletedProduct });
+    } catch (error) {
+        // Handle any errors that may occur during the process
+        next(error);
     }
+}
 ,
-async addCategory(req, res, next) {
+
+    // Update Product
+async updateProduct(req, res, next) {
+    try {
+        // Fetch the product ID from the request parameters
+        const { productId } = req.params;
+        // Extract updated product details from the request body
+        const { name, description, price, category, size, color, image } = req.body;
+
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+
+        // If the product doesn't exist, return a 404 error
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Update the product details
+        product.name = name;
+        product.description = description;
+        product.price = price;
+        product.category = category;
+        product.size = size;
+        product.color = color;
+        product.image = image;
+
+        // Save the updated product to the database
+        await product.save();
+
+        // Return a success response with the updated product details
+        res.json({ message: 'Product updated successfully', product });
+    } catch (error) {
+        // Handle any errors that may occur during the process
+        next(error);
+    }
+},
+
+        // Get Product
+    async getProduct(req, res, next) {
+    try {
+        // Fetch the product ID from the request parameters
+        const { productId } = req.params;
+
+        // Find the product by its ID
+        const product = await Product.findById(productId);
+
+        // If the product doesn't exist, return a 404 error
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Return the product details
+        const productDto = new ProductDTO(
+            product._id,
+            product.name,
+            product.description,
+            product.price,
+            product.categoryID,
+            product.availableSizes,
+            product.color,
+            product.image,
+            product.inStock
+
+        )
+        res.status(200).json({ productDto });
+    } catch (error) {
+        // Handle any errors that may occur during the process
+        next(error);
+    }
+}
+,
+    async getProductsByCategory(req, res, next) {
+    try {
+        const { storeName, categoryName } = req.params;
+
+        // Find the store by name
+        const store = await Store.findOne({ name: storeName });
+
+        // If the store doesn't exist, return an error
+        if (!store) {
+            return res.status(404).json({ message: 'Store not found' });
+        }
+
+        // Find the category by name
+        const category = await Category.findOne({ name: categoryName });
+
+        // If the category doesn't exist, return an error
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+
+        // Fetch products belonging to the category and associated with the store
+        const products = await Product.find({
+            categoryID: category._id,
+            brandID: store._id // Assuming brandID represents the store's ID in the Product model
+        });
+
+        const productsArr = products.map((product)=>{
+            const productDto = new ProductDTO(
+                product._id,
+                product.name,
+                product.description,
+                product.price,
+                product.categoryID,
+                product.availableSizes,
+                product.color,
+                product.image,
+                product.inStock
+    
+            )
+
+            return productDto
+        })
+        // Return the products belonging to the category and associated with the store
+        res.json({ products:productsArr });
+    } catch (error){
+        next(error);
+    }
+}
+
+,
+    async addCategory(req, res, next) {
     try {
         // Extract category name from the request body
         const { name } = req.body;
+        const storeId = req.user._id;
+
 
         // Check if the category already exists
         const existingCategory = await Category.findOne({ name });
@@ -167,6 +328,11 @@ async addCategory(req, res, next) {
 
         // Save the new category to the database
         await newCategory.save();
+
+        const store = await Store.findOne(storeId);
+        store.categories.push(newCategory._id);
+
+        await store.save();
 
         // Return a success response
         res.status(201).json({
