@@ -9,6 +9,8 @@ const router = Router();
 // user route
 const homeroute = router.get("/home",homeController.handleView)
 const regUser = router.post("/register",userController.register);
+const getProduct = router.get("/store/:productId",storeController.getProduct);
+const getProductsByCategory = router.get("/:storeName/:categoryName",storeController.getProductsByCategory);
 
 const logUser = router.post("/login",userController.login);
 
