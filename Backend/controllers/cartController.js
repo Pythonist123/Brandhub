@@ -157,13 +157,17 @@ const cartController = {
     },
 
     async deleteCart(req, res, next) {
-        const { cartId } = req.body;
+        // const  cartId  = req.session.cartId;
+        const {cartId} = req.body;
+        
+        // console.log(req.session.cartId);
+
 
         try {
             // Find and delete the cart by ID
-            await Cart.findByIdAndDelete(cartId);
-
-            res.status(200).json({ message: 'Cart deleted successfully' });
+            const cart = await Cart.findByIdAndDelete(cartId);
+            // await cart.save();
+            res.status(200).json({ message: 'Cart deleted successfully',cart });
         } catch (error) {
             next(error);
         }
