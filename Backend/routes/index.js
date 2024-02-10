@@ -17,6 +17,7 @@ const logUser = router.post("/login",userController.login);
 
 // cart routes
 const addTocart = router.post("/add",cartController.addToCart);
+const deleteCart = router.delete("/deleteCart",cartController.deleteCart);
 
 // admin route
 const logadmin = router.post("/admin/login",adminController.login);
