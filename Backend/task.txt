@@ -1,0 +1,26 @@
+   Task                            Status
+1) Implment Caching              incomplete
+2) Routes:
+        Product Routes{          ongoing
+            add product,
+            update product,
+            delete product,
+            get product
+        }
+
+        Category Routes{            ongoing
+            add category,
+            update category,
+            delete category,
+            get category
+        }
+
+3)  Role Based Auth                 complete
+4)  Payment                         incomplete
+5)  User cart                       incomplete
+        Add to cart
+        Remove from Cart
+6)  User whishlist                  incomplete
+        Add to whishlist
+        Remove form whishlist
+

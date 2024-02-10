@@ -1,4 +1,5 @@
 import express, { response } from "express";
+import session from "express-session";
 import {
     homeroute,
     regUser,
@@ -15,6 +16,17 @@ import passport from "passport";
 import errorHandler from "./middleware/error.js";
 import cookieParser from "cookie-parser";
 const app = express();
+
+app.use(session({
+    secret: 'your-secret-key', // Replace with your own secret key
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 3600000, // 1 hour in milliseconds
+        // expires: new Date(Date.now() + 3600000), // Alternative way using expires option
+        // other cookie options...
+    }
+}));
 
 app.use(passport.initialize());
 app.use(express.json());

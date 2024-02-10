@@ -4,6 +4,7 @@ import userController from "../controllers/userController.js";
 import authController from "../controllers/authController.js";
 import adminController from "../controllers/adminController.js";
 import storeController from "../controllers/storeController.js";
+import cartController from "../controllers/cartController.js";
 
 const router = Router();
 // user route
@@ -14,7 +15,8 @@ const getProductsByCategory = router.get("/:storeName/:categoryName",storeContro
 
 const logUser = router.post("/login",userController.login);
 
-
+// cart routes
+const addTocart = router.post("/add",cartController.addToCart);
 
 // admin route
 const logadmin = router.post("/admin/login",adminController.login);
